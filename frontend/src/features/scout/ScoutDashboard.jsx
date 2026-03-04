@@ -4,9 +4,10 @@ import {
     Activity, Users, Bookmark, TrendingUp, ArrowRight, Shield,
     Zap, Eye, Target, Briefcase, Users2, Star, CheckCircle2
 } from 'lucide-react';
-import { getAnalytics, getAthletes } from '../../services/scoutService';
+import { getAthletes } from '../../services/scoutService';
 import ScoutAnalyticsCard from './ScoutAnalyticsCard';
 import { useAuth } from '../../context/AuthContext';
+import { useAnalytics } from '../../context/AnalyticsContext';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -30,40 +31,40 @@ ChartJS.register(
 const ScoutDashboard = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
-    const [stats, setStats] = useState(null);
+    const { analytics, fetchAnalytics, loading: analyticsLoading } = useAnalytics();
     const [recentAthletes, setRecentAthletes] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchDashboardData = async () => {
             if (!user || user.role !== 'scout') {
                 setLoading(false);
                 return;
             }
 
             setLoading(true);
-
             try {
-                const [analyticsRes, athleteRes] = await Promise.all([
-                    getAnalytics(),
-                    getAthletes({ page: 1, limit: 5 }),
+                // Fetch analytics (global) and recent athletes (local)
+                await Promise.all([
+                    fetchAnalytics(),
+                    (async () => {
+                        const res = await getAthletes({ page: 1, limit: 5 });
+                        if (res.success) {
+                            setRecentAthletes(res.data?.data || res.data || []);
+                        }
+                    })()
                 ]);
-
-                if (analyticsRes.success) {
-                    setStats(analyticsRes.data);
-                }
-                if (athleteRes.success) {
-                    setRecentAthletes(athleteRes.data?.data || athleteRes.data || []);
-                }
             } catch (error) {
-                console.error("Dashboard fetch error:", error);
+                console.error("Dashboard component fetch error:", error);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchData();
-    }, [user]);
+        fetchDashboardData();
+    }, [user, fetchAnalytics]);
+
+    const stats = analytics;
 
     const chartData = useMemo(() => {
         if (!stats) return null;

@@ -4,11 +4,13 @@ import { Bookmark, Eye, Loader2, GitCompare } from 'lucide-react';
 import { DndContext, closestCenter, DragOverlay } from '@dnd-kit/core';
 import { getWatchlist, removeFromWatchlist, updateAthleteMeta } from '../../services/scoutService';
 import { KanbanColumn, DraggableAthleteCard } from './KanbanColumn';
+import { useAnalytics } from '../../context/AnalyticsContext';
 
 const STATUSES = ['Prospect', 'Shortlisted', 'Contacted', 'Signed', 'Pass'];
 
 const WatchlistPage = () => {
     const navigate = useNavigate();
+    const { fetchAnalytics } = useAnalytics();
     const [watchlist, setWatchlist] = useState([]);
     const [loading, setLoading] = useState(true);
     const [removingId, setRemovingId] = useState(null);
@@ -49,6 +51,7 @@ const WatchlistPage = () => {
                 const id = item.athleteId?._id || item.athleteId;
                 return id !== athleteId;
             }));
+            fetchAnalytics(); // Refresh global analytics
             showMessage('success', 'Athlete removed from terminal track');
         } else {
             showMessage('error', result.message);
@@ -87,6 +90,7 @@ const WatchlistPage = () => {
             fetchWatchlist(); // Revert on failure
             showMessage('error', 'Status sync failure');
         } else {
+            fetchAnalytics(); // Refresh global analytics
             showMessage('success', `Moved to ${newStatus}`);
         }
     };

@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { AnalyticsProvider } from './context/AnalyticsContext';
 import { ProtectedRoute, RoleBasedRoute } from './routes/RouteGuards';
 import MainLayout from './components/layout/MainLayout';
 
@@ -67,9 +68,11 @@ const AppContent = () => {
 const App = () => {
     return (
         <AuthProvider>
-            <Router>
-                <AppContent />
-            </Router>
+            <AnalyticsProvider>
+                <Router>
+                    <AppContent />
+                </Router>
+            </AnalyticsProvider>
         </AuthProvider>
     );
 }

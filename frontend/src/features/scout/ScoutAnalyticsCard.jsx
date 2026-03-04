@@ -1,5 +1,5 @@
-import React from 'react';
 import { ArrowUpRight, TrendingUp, Info } from 'lucide-react';
+import CountUp from 'react-countup';
 
 const ScoutAnalyticsCard = ({ title, value, subtext, icon: Icon, color = 'primary', trend }) => {
     return (
@@ -22,7 +22,12 @@ const ScoutAnalyticsCard = ({ title, value, subtext, icon: Icon, color = 'primar
 
             <div>
                 <div className="text-3xl font-black text-white tabular-nums mb-1 tracking-tighter italic">
-                    {value}
+                    <CountUp
+                        end={value || 0}
+                        duration={1.5}
+                        decimals={title.includes('Rating') ? 1 : 0}
+                        key={value} // Forces redraw on change
+                    />
                 </div>
                 <div className="text-[10px] font-black uppercase text-neutral-500 tracking-[0.2em]">
                     {title}
