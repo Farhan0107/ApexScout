@@ -22,10 +22,11 @@ const AthleteCard = ({ athlete, isWatchlisted, onToggleWatchlist, onCompareSelec
     };
 
     const statusColors = {
-        Interested: 'text-[#E2FF66]', // Lime
-        Monitoring: 'text-[#22D3EE]', // Cyan
-        Pass: 'text-red-500',         // Red
-        None: 'text-neutral-500'
+        Prospect: 'text-neutral-500',
+        Shortlisted: 'text-[#22D3EE]',
+        Contacted: 'text-amber-400',
+        Signed: 'text-[#E2FF66]',
+        Pass: 'text-red-500',
     };
 
     const [meta, setMeta] = useState({ rating: 1, status: 'None', notes: '' });
@@ -34,8 +35,9 @@ const AthleteCard = ({ athlete, isWatchlisted, onToggleWatchlist, onCompareSelec
 
     useEffect(() => {
         const fetchMeta = async () => {
-            if (!athlete._id) return;
-            const res = await getAthleteMeta(athlete._id);
+            const athleteUserId = athlete.userId?._id || athlete.userId;
+            if (!athleteUserId) return;
+            const res = await getAthleteMeta(athleteUserId);
             if (res.success && res.data) {
                 setMeta({
                     rating: res.data.rating || 1,
@@ -45,12 +47,13 @@ const AthleteCard = ({ athlete, isWatchlisted, onToggleWatchlist, onCompareSelec
             }
         };
         fetchMeta();
-    }, [athlete._id]);
+    }, [athlete.userId?._id, athlete.userId]);
 
     const handleUpdateMeta = async (updates) => {
+        const athleteUserId = athlete.userId?._id || athlete.userId;
         const newMeta = { ...meta, ...updates };
         setMeta(newMeta);
-        await updateAthleteMeta(athlete._id, newMeta);
+        await updateAthleteMeta(athleteUserId, newMeta);
     };
 
     const handleNotesOpen = () => {
@@ -65,7 +68,7 @@ const AthleteCard = ({ athlete, isWatchlisted, onToggleWatchlist, onCompareSelec
 
     return (
         <div
-            onClick={() => navigate(`/athlete/${athlete._id}`)}
+            onClick={() => navigate(`/athlete/${athlete.userId?._id || athlete.userId}`)}
             className={`group relative bg-surface border backdrop-blur-xl rounded-[28px] overflow-hidden transition-all duration-500 hover:-translate-y-2 focus-within:-translate-y-2 hover:shadow-[0_12px_40px_-12px_rgba(226,255,102,0.15)] focus-within:shadow-[0_12px_40px_-12px_rgba(226,255,102,0.15)] group-hover:border-primary/20 cursor-pointer ${isCompareSelected ? 'border-accent/50 shadow-[0_0_20px_rgba(34,211,238,0.2)]' : 'border-white/5'}`}
         >
             {isNotesModalOpen && (
@@ -200,13 +203,14 @@ const AthleteCard = ({ athlete, isWatchlisted, onToggleWatchlist, onCompareSelec
                     {/* Status Dropdown */}
                     <div className="relative group/status flex items-center">
                         <select
-                            value={meta.status || 'None'}
+                            value={meta.status || 'Prospect'}
                             onChange={(e) => handleUpdateMeta({ status: e.target.value })}
-                            className={`appearance-none bg-transparent ${statusColors[meta.status] || statusColors.None} font-black text-[9px] uppercase tracking-widest outline-none cursor-pointer hover:brightness-125 transition-all text-right pr-4`}
+                            className={`appearance-none bg-transparent ${statusColors[meta.status] || statusColors.Prospect} font-black text-[9px] uppercase tracking-widest outline-none cursor-pointer hover:brightness-125 transition-all text-right pr-4`}
                         >
-                            <option value="None" className="bg-neutral-900 text-neutral-500">Log Status...</option>
-                            <option value="Interested" className="bg-neutral-900 text-[#E2FF66]">Interested</option>
-                            <option value="Monitoring" className="bg-neutral-900 text-[#22D3EE]">Monitoring</option>
+                            <option value="Prospect" className="bg-neutral-900 text-neutral-500">Prospect</option>
+                            <option value="Shortlisted" className="bg-neutral-900 text-[#22D3EE]">Shortlisted</option>
+                            <option value="Contacted" className="bg-neutral-900 text-amber-400">Contacted</option>
+                            <option value="Signed" className="bg-neutral-900 text-[#E2FF66]">Signed</option>
                             <option value="Pass" className="bg-neutral-900 text-red-500">Pass</option>
                         </select>
                         <div className={`absolute right-0 w-2 h-2 rounded-full ${statusColors[meta.status] && meta.status !== 'None' ? statusColors[meta.status].replace('text-', 'bg-') : 'bg-transparent'} pointer-events-none drop-shadow-[0_0_5px_currentColor] opacity-70`} />

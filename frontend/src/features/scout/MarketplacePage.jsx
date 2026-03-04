@@ -13,6 +13,12 @@ const MarketplacePage = () => {
     const [filtersOpen, setFiltersOpen] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
 
+    // Search and Filters
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedSport, setSelectedSport] = useState('All');
+    const [verifiedOnly, setVerifiedOnly] = useState(false);
+    const [sortBy, setSortBy] = useState('-createdAt');
+
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -37,6 +43,7 @@ const MarketplacePage = () => {
                 page: currentPage,
                 limit: 12,
                 sortBy,
+                search: searchQuery || undefined,
                 minSpeed: minSpeed > 0 ? minSpeed : undefined,
                 minVerticalLeap: minVertical > 0 ? minVertical : undefined,
                 minPointsPerGame: minPoints > 0 ? minPoints : undefined
@@ -47,8 +54,6 @@ const MarketplacePage = () => {
             const result = await getAthletes(params);
 
             if (result.success) {
-                // If API returns { success: true, count, pages, data }, use result.data
-                // If API returns { success: true, data: { count, pages, data } }, use result.data.data
                 const athletesData = result.data?.data || result.data || [];
                 setAthletes(Array.isArray(athletesData) ? athletesData : []);
                 setTotalPages(result.totalPages || result.data?.totalPages || 1);
@@ -65,7 +70,7 @@ const MarketplacePage = () => {
         } finally {
             setLoading(false);
         }
-    }, [currentPage, selectedSport, verifiedOnly, sortBy]);
+    }, [currentPage, selectedSport, verifiedOnly, sortBy, searchQuery, minSpeed, minVertical, minPoints]);
 
     // Fetch watchlist IDs
     const fetchWatchlist = useCallback(async () => {
@@ -87,7 +92,7 @@ const MarketplacePage = () => {
     // Reset page when filters change
     useEffect(() => {
         setCurrentPage(1);
-    }, [selectedSport, verifiedOnly, sortBy, minSpeed, minVertical, minPoints]);
+    }, [selectedSport, verifiedOnly, sortBy, searchQuery, minSpeed, minVertical, minPoints]);
 
     const showMessage = (type, text) => {
         setMessage({ type, text });

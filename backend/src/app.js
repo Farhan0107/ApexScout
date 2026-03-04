@@ -12,6 +12,7 @@ const authRoutes = require('./routes/authRoutes');
 const athleteProfileRoutes = require('./routes/athleteProfileRoutes');
 const scoutRoutes = require('./routes/scoutRoutes');
 const metaRoutes = require('./routes/metaRoutes');
+const mediaRoutes = require('./routes/mediaRoutes');
 
 const app = express();
 
@@ -50,6 +51,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/profile', athleteProfileRoutes);
 app.use('/api/v1/scout', scoutRoutes);
 app.use('/api/v1/meta', metaRoutes);
+app.use('/api/v1/media', mediaRoutes);
 
 // Centralized error handler
 app.use(errorHandler);

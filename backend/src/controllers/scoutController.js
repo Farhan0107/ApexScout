@@ -7,7 +7,64 @@ const {
     removeFromWatchlist,
     getWatchlist
 } = require('../services/scoutService');
+const ScoutAthleteMeta = require('../models/ScoutAthleteMeta');
 const sendResponse = require('../utils/sendResponse');
+
+/**
+ * @desc    Get scout analytics
+ * @route   GET /api/v1/scout/analytics
+ * @access  Private/Scout
+ */
+exports.getAnalytics = asyncHandler(async (req, res, next) => {
+    const scoutId = req.user._id;
+
+    // 1. Fetch all meta for this scout
+    const allMeta = await ScoutAthleteMeta.find({ scoutId }).populate({
+        path: 'athleteId',
+        select: 'userId',
+        populate: {
+            path: 'userId',
+            select: 'name'
+        }
+    });
+
+    const totalProspects = allMeta.filter(m => m.status === 'Prospect').length;
+    const shortlisted = allMeta.filter(m => m.status === 'Shortlisted').length;
+    const contacted = allMeta.filter(m => m.status === 'Contacted').length;
+    const signed = allMeta.filter(m => m.status === 'Signed').length;
+    const pass = allMeta.filter(m => m.status === 'Pass').length;
+
+    const avgRating = allMeta.length > 0
+        ? (allMeta.reduce((acc, current) => acc + current.rating, 0) / allMeta.length).toFixed(1)
+        : 0;
+
+    // Top rated athlete
+    const topRatedAthlete = allMeta.length > 0
+        ? [...allMeta].sort((a, b) => b.rating - a.rating)[0]
+        : null;
+
+    const pipelineDistribution = {
+        Prospect: totalProspects,
+        Shortlisted: shortlisted,
+        Contacted: contacted,
+        Signed: signed,
+        Pass: pass,
+    };
+
+    return sendResponse(res, 200, {
+        totalProspects,
+        shortlisted,
+        contacted,
+        signed,
+        averageRating: Number(avgRating),
+        pipelineDistribution,
+        topRatedAthlete: topRatedAthlete ? {
+            id: topRatedAthlete.athleteId?._id,
+            name: topRatedAthlete.athleteId?.userId?.name || 'Unknown',
+            rating: topRatedAthlete.rating
+        } : null
+    });
+});
 
 /**
  * @desc    Get athletes with filters
@@ -15,14 +72,8 @@ const sendResponse = require('../utils/sendResponse');
  * @access  Private/Scout
  */
 exports.getAthletes = asyncHandler(async (req, res, next) => {
-    const { count, totalPages, currentPage, data } = await scoutService.getAthletes(req.query);
-
-    return sendResponse(res, 200, {
-        count,
-        totalPages,
-        currentPage,
-        data,
-    });
+    const result = await getAthletes(req.query);
+    return sendResponse(res, 200, result);
 });
 
 /**
@@ -32,7 +83,6 @@ exports.getAthletes = asyncHandler(async (req, res, next) => {
  */
 exports.getAthleteById = asyncHandler(async (req, res, next) => {
     const athlete = await getAthleteById(req.params.id);
-
     return sendResponse(res, 200, athlete);
 });
 
@@ -50,8 +100,7 @@ exports.compareAthletes = asyncHandler(async (req, res, next) => {
         throw error;
     }
 
-    const comparisonData = await scoutService.compareAthletes(id1, id2);
-
+    const comparisonData = await compareAthletes(id1, id2);
     return sendResponse(res, 200, comparisonData);
 });
 
@@ -62,9 +111,7 @@ exports.compareAthletes = asyncHandler(async (req, res, next) => {
  */
 exports.addToWatchlist = asyncHandler(async (req, res, next) => {
     const { athleteId } = req.params;
-
-    const watchlist = await scoutService.addToWatchlist(req.user._id, athleteId);
-
+    const watchlist = await addToWatchlist(req.user._id, athleteId);
     return sendResponse(res, 201, watchlist, 'Athlete added to watchlist');
 });
 
@@ -75,9 +122,7 @@ exports.addToWatchlist = asyncHandler(async (req, res, next) => {
  */
 exports.removeFromWatchlist = asyncHandler(async (req, res, next) => {
     const { athleteId } = req.params;
-
-    await scoutService.removeFromWatchlist(req.user._id, athleteId);
-
+    await removeFromWatchlist(req.user._id, athleteId);
     return sendResponse(res, 200, null, 'Successfully removed from watchlist');
 });
 
@@ -87,7 +132,6 @@ exports.removeFromWatchlist = asyncHandler(async (req, res, next) => {
  * @access  Private/Scout
  */
 exports.getWatchlist = asyncHandler(async (req, res, next) => {
-    const watchlist = await scoutService.getWatchlist(req.user._id);
-
+    const watchlist = await getWatchlist(req.user._id);
     return sendResponse(res, 200, watchlist);
 });

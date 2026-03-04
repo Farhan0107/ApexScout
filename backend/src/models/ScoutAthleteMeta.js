@@ -19,8 +19,8 @@ const metaSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Interested', 'Monitoring', 'Pass', 'None'],
-        default: 'None'
+        enum: ['Prospect', 'Shortlisted', 'Contacted', 'Signed', 'Pass'],
+        default: 'Prospect'
     },
     notes: {
         type: String,

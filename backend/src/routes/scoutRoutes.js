@@ -2,6 +2,7 @@ const express = require('express');
 const {
     getAthletes,
     getAthleteById,
+    getAnalytics,
     compareAthletes,
     addToWatchlist,
     removeFromWatchlist,
@@ -18,6 +19,7 @@ router.use(protect);
 router.use(authorize('scout'));
 
 router.get('/athletes', getAthletes);
+router.get('/analytics', getAnalytics);
 router.get('/athletes/:id', getAthleteById);
 router.get('/compare', compareAthletes);
 

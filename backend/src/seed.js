@@ -150,7 +150,30 @@ const seedDB = async () => {
         }
 
         console.log(`\n🎉 Successfully seeded ${sampleAthletes.length} athletes + 1 scout.`);
-        console.log('\n📋 Demo Credentials:');
+
+        console.log('📦 Populating initial scout metrics & watchlist...');
+        const athletes = await User.find({ role: 'athlete' }).limit(6);
+        const Watchlist = require('./models/Watchlist');
+        const ScoutAthleteMeta = require('./models/ScoutAthleteMeta');
+
+        const stages = ['Prospect', 'Shortlisted', 'Contacted', 'Signed', 'Pass'];
+        for (let i = 0; i < athletes.length; i++) {
+            await Watchlist.create({
+                scoutId: scoutUser._id,
+                athleteId: athletes[i]._id
+            });
+
+            await ScoutAthleteMeta.create({
+                scoutId: scoutUser._id,
+                athleteId: athletes[i]._id,
+                status: stages[i % 4], // Distribute across first 4 stages
+                rating: i === 0 ? 5 : (i % 3) + 2,
+                notes: `Strategic evaluation for ${athletes[i].name}. High priority prospect.`
+            });
+        }
+        console.log('   Sync Completed.\n');
+
+        console.log('📋 Demo Credentials:');
         console.log('   Scout Login:   scout@apex.com / password123');
         console.log('   Athlete Login: marcus@apex.com / password123 (or any athlete email)');
         console.log('');

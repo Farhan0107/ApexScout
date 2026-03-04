@@ -8,6 +8,7 @@ const User = require('../models/User');
  */
 const getAthletes = async (queryParams) => {
     const {
+        search,
         sportType,
         minVerticalLeap,
         minSpeed,
@@ -20,6 +21,16 @@ const getAthletes = async (queryParams) => {
 
     // 1. Build Query Object
     const query = {};
+
+    if (search) {
+        // Find users matching search name
+        const users = await User.find({
+            name: { $regex: search, $options: 'i' },
+            role: 'athlete'
+        }).select('_id');
+        const userIds = users.map(u => u._id);
+        query.userId = { $in: userIds };
+    }
 
     if (sportType) query.sportType = sportType;
     if (isVerified !== undefined) query.isVerified = isVerified === 'true';
@@ -68,7 +79,7 @@ const getAthletes = async (queryParams) => {
  * Get detailed athlete profile by ID
  */
 const getAthleteById = async (id) => {
-    const athlete = await AthleteProfile.findById(id)
+    const athlete = await AthleteProfile.findOne({ userId: id })
         .populate('userId', 'name email')
         .select('-__v')
         .lean();
@@ -141,14 +152,43 @@ const removeFromWatchlist = async (scoutId, athleteId) => {
  * Get scout's watchlist
  */
 const getWatchlist = async (scoutId) => {
-    const list = await Watchlist.find({ scoutId })
+    // 1. Fetch the base watchlist
+    const watchlist = await Watchlist.find({ scoutId })
         .populate({
             path: 'athleteId',
             select: 'name email'
         })
         .lean();
 
-    return list;
+    // 2. Hydrate each item with Profile and Meta intelligence
+    const hydratedList = await Promise.all(watchlist.map(async (item) => {
+        const athleteId = item.athleteId?._id || item.athleteId;
+
+        // Fetch profile (for sportType and normalized metrics)
+        const profile = await AthleteProfile.findOne({ userId: athleteId })
+            .select('sportType normalizedMetrics isVerified')
+            .lean();
+
+        // Fetch scout-specific meta (for rating and status)
+        const ScoutAthleteMeta = require('../models/ScoutAthleteMeta');
+        const meta = await ScoutAthleteMeta.findOne({ scoutId, athleteId })
+            .select('rating status notes')
+            .lean();
+
+        // Merge everything into the athlete object
+        return {
+            ...item,
+            athleteId: {
+                ...item.athleteId,
+                sportType: profile?.sportType || 'Not Specified',
+                normalizedMetrics: profile?.normalizedMetrics || {},
+                isVerified: profile?.isVerified || false
+            },
+            meta: meta || { rating: 1, status: 'Prospect', notes: '' }
+        };
+    }));
+
+    return hydratedList;
 };
 
 module.exports = {

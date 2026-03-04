@@ -5,6 +5,8 @@ import AthleteProfileForm from './AthleteProfileForm';
 import RadarChartCard from '../../components/charts/RadarChartCard';
 import { getMyProfile, upsertProfile } from '../../services/profileService';
 import { normalizePreview } from '../../utils/normalizePreview';
+import HighlightMediaForm from './HighlightMediaForm';
+import { useAuth } from '../../context/AuthContext';
 
 const AthleteDashboard = () => {
     const [profile, setProfile] = useState(null);
@@ -12,6 +14,7 @@ const AthleteDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [saveLoading, setSaveLoading] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
+    const { user } = useAuth();
 
     useEffect(() => {
         fetchProfile();
@@ -179,6 +182,9 @@ const AthleteDashboard = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Media Highlights Section */}
+            <HighlightMediaForm athleteId={user?.userId} />
         </motion.div>
     );
 };

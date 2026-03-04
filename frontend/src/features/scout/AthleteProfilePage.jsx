@@ -9,13 +9,18 @@ import {
     TrendingUp,
     Activity,
     Edit3,
-    ArrowUpRight
+    ArrowUpRight,
+    Video,
+    Play,
+    Image as ImageIcon,
+    ExternalLink
 } from 'lucide-react';
 import {
     getAthleteById,
     getAthleteMeta,
     updateAthleteMeta
 } from '../../services/scoutService';
+import { getAthleteMedia } from '../../services/mediaService';
 import {
     Chart as ChartJS,
     RadialLinearScale,
@@ -42,6 +47,7 @@ const AthleteProfilePage = () => {
 
     const [athlete, setAthlete] = useState(null);
     const [meta, setMeta] = useState({ rating: 1, status: 'None', notes: '' });
+    const [media, setMedia] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [savedNotice, setSavedNotice] = useState(false);
@@ -49,9 +55,10 @@ const AthleteProfilePage = () => {
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
-            const [athleteRes, metaRes] = await Promise.all([
+            const [athleteRes, metaRes, mediaRes] = await Promise.all([
                 getAthleteById(athleteId),
-                getAthleteMeta(athleteId)
+                getAthleteMeta(athleteId),
+                getAthleteMedia(athleteId)
             ]);
 
             if (athleteRes.success) {
@@ -64,6 +71,9 @@ const AthleteProfilePage = () => {
                     notes: metaRes.data.notes || ''
                 });
             }
+            if (mediaRes.success) {
+                setMedia(mediaRes.data);
+            }
             setLoading(false);
         };
         fetchData();
@@ -72,7 +82,6 @@ const AthleteProfilePage = () => {
     const handleUpdateMeta = async (updates) => {
         const newMeta = { ...meta, ...updates };
         setMeta(newMeta);
-        // We sync on change for rating and status, and save button for notes or explicit commit
     };
 
     const handleCommitMeta = async () => {
@@ -267,6 +276,82 @@ const AthleteProfilePage = () => {
                             </div>
                         </div>
                     </div>
+
+                    {/* Highlights & Media System - NEW SECTION */}
+                    {(media?.videoUrl || (media?.images && media.images.length > 0)) ? (
+                        <div className="bg-surface border border-white/5 rounded-[32px] p-8 lg:p-10 space-y-10">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h3 className="text-xl font-black text-white uppercase tracking-tight italic">Highlight <span className="text-primary">Media</span></h3>
+                                    <p className="text-neutral-500 text-[10px] font-bold uppercase tracking-widest mt-1">Direct performance archives</p>
+                                </div>
+                                <div className="p-3 rounded-2xl bg-primary/5 text-primary border border-primary/20">
+                                    <Video size={20} />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {/* Video Player / Link */}
+                                {media.videoUrl && (
+                                    <div className="space-y-4">
+                                        <div className="text-[10px] font-black uppercase tracking-widest text-neutral-500 flex items-center gap-2">
+                                            <Play size={12} className="text-primary" />
+                                            Primary Highlight Reel
+                                        </div>
+                                        <div className="aspect-video w-full rounded-[24px] bg-black/40 border border-white/5 flex items-center justify-center group overflow-hidden relative">
+                                            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                            <div className="z-10 text-center">
+                                                <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center text-primary border border-primary/30 mb-4 group-hover:scale-110 transition-transform">
+                                                    <Play size={24} fill="currentColor" />
+                                                </div>
+                                                <a
+                                                    href={media.videoUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-white transition-colors flex items-center gap-2 justify-center"
+                                                >
+                                                    Open In External Terminal <ExternalLink size={12} />
+                                                </a>
+                                            </div>
+                                        </div>
+                                        {media.performanceClipUrl && (
+                                            <div className="p-4 bg-white/5 rounded-2xl border border-white/5 flex items-center justify-between group cursor-pointer hover:border-accent/30 transition-all">
+                                                <div className="flex items-center gap-3">
+                                                    <Activity size={16} className="text-accent" />
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-neutral-300">Performance Clip Available</span>
+                                                </div>
+                                                <ArrowUpRight size={14} className="text-neutral-600 group-hover:text-accent transition-colors" />
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Image Gallery Mini */}
+                                {media.images && media.images.length > 0 && (
+                                    <div className="space-y-4">
+                                        <div className="text-[10px] font-black uppercase tracking-widest text-neutral-500 flex items-center gap-2">
+                                            <ImageIcon size={12} className="text-primary" />
+                                            Action Capture Gallery
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            {media.images.slice(0, 4).map((img, idx) => (
+                                                <div key={idx} className="aspect-square rounded-[20px] bg-black/20 border border-white/5 overflow-hidden group/img relative">
+                                                    <img
+                                                        src={img.url}
+                                                        alt={img.title || 'Athlete Highlight'}
+                                                        className="w-full h-full object-cover opacity-60 group-hover/img:opacity-100 group-hover/img:scale-110 transition-all duration-700"
+                                                    />
+                                                    <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity">
+                                                        <p className="text-[9px] font-bold text-white uppercase tracking-widest truncate">{img.title || 'Highlight'}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ) : null}
                 </div>
 
                 {/* Right: Scout Private Panel (30%) */}
@@ -306,13 +391,13 @@ const AthleteProfilePage = () => {
                             <div>
                                 <label className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-4 block">Pipeline Status</label>
                                 <div className="grid grid-cols-1 gap-2">
-                                    {['Interested', 'Monitoring', 'Pass', 'None'].map(s => (
+                                    {['Prospect', 'Shortlisted', 'Contacted', 'Signed', 'Pass'].map(s => (
                                         <button
                                             key={s}
                                             onClick={() => handleUpdateMeta({ status: s })}
                                             className={`py-3 px-5 rounded-2xl border text-[10px] font-black uppercase tracking-widest transition-all text-left flex items-center justify-between ${meta.status === s
-                                                    ? 'bg-primary/10 border-primary text-primary shadow-[0_0_15px_rgba(226,255,102,0.1)]'
-                                                    : 'bg-white/5 border-white/5 text-neutral-500 hover:text-white hover:bg-white/10'
+                                                ? 'bg-primary/10 border-primary text-primary shadow-[0_0_15px_rgba(226,255,102,0.1)]'
+                                                : 'bg-white/5 border-white/5 text-neutral-500 hover:text-white hover:bg-white/10'
                                                 }`}
                                         >
                                             {s}
