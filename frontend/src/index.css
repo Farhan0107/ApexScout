@@ -61,7 +61,7 @@
 
 .neon-text {
   color: theme('colors.primary.DEFAULT');
-  filter: drop_shadow(0 0 8px rgba(226, 255, 102, 0.6));
+  filter: drop-shadow(0 0 8px rgba(226, 255, 102, 0.6));
 }
 
 .accent-glow {

@@ -18,11 +18,11 @@ const MarketplacePage = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
 
-    // Filters
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedSport, setSelectedSport] = useState('All');
-    const [verifiedOnly, setVerifiedOnly] = useState(false);
-    const [sortBy, setSortBy] = useState('-createdAt');
+    // Performance Filters
+    const [minSpeed, setMinSpeed] = useState(0);
+    const [minVertical, setMinVertical] = useState(0);
+    const [minPoints, setMinPoints] = useState(0);
+    const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false);
 
     // Compare
     const [compareSelection, setCompareSelection] = useState([]);
@@ -33,7 +33,14 @@ const MarketplacePage = () => {
     const fetchAthletes = useCallback(async () => {
         try {
             setLoading(true);
-            const params = { page: currentPage, limit: 12, sortBy };
+            const params = {
+                page: currentPage,
+                limit: 12,
+                sortBy,
+                minSpeed: minSpeed > 0 ? minSpeed : undefined,
+                minVerticalLeap: minVertical > 0 ? minVertical : undefined,
+                minPointsPerGame: minPoints > 0 ? minPoints : undefined
+            };
             if (selectedSport !== 'All') params.sportType = selectedSport;
             if (verifiedOnly) params.isVerified = 'true';
 
@@ -80,7 +87,7 @@ const MarketplacePage = () => {
     // Reset page when filters change
     useEffect(() => {
         setCurrentPage(1);
-    }, [selectedSport, verifiedOnly, sortBy]);
+    }, [selectedSport, verifiedOnly, sortBy, minSpeed, minVertical, minPoints]);
 
     const showMessage = (type, text) => {
         setMessage({ type, text });
@@ -231,6 +238,17 @@ const MarketplacePage = () => {
                     {/* Additional Filters */}
                     <div className="flex items-center gap-3">
                         <button
+                            onClick={() => setAdvancedFiltersOpen(!advancedFiltersOpen)}
+                            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${advancedFiltersOpen
+                                ? 'bg-accent/10 text-accent border border-accent/20'
+                                : 'bg-white/5 text-neutral-400 border border-white/5 hover:text-white'
+                                }`}
+                        >
+                            <SlidersHorizontal size={13} />
+                            Metrics
+                        </button>
+
+                        <button
                             onClick={() => setVerifiedOnly(!verifiedOnly)}
                             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${verifiedOnly
                                 ? 'bg-primary/10 text-primary border border-primary/20'
@@ -247,12 +265,38 @@ const MarketplacePage = () => {
                             className="bg-neutral-800/60 border border-white/5 rounded-xl px-3 py-2.5 text-[10px] font-bold uppercase text-neutral-400 focus:outline-none focus:border-primary/30 cursor-pointer"
                         >
                             <option value="-createdAt">Newest</option>
-                            <option value="rawMetrics.speed">Speed</option>
-                            <option value="rawMetrics.verticalLeap">Vertical Leap</option>
-                            <option value="rawMetrics.pointsPerGame">Points/Game</option>
+                            <option value="normalizedMetrics.speed">Top Speed</option>
+                            <option value="normalizedMetrics.verticalLeap">Top Vertical</option>
+                            <option value="normalizedMetrics.pointsPerGame">Top Points</option>
                         </select>
                     </div>
                 </div>
+
+                {/* Performance Sliders Panel */}
+                {advancedFiltersOpen && (
+                    <div className="mt-6 pt-6 border-t border-white/5 grid grid-cols-1 md:grid-cols-3 gap-8 animate-in slide-in-from-top-4 duration-300">
+                        {[
+                            { label: 'Min Speed (%)', value: minSpeed, setter: setMinSpeed, color: 'accent' },
+                            { label: 'Min Vertical (%)', value: minVertical, setter: setMinVertical, color: 'primary' },
+                            { label: 'Min Points (%)', value: minPoints, setter: setMinPoints, color: 'amber-400' },
+                        ].map(f => (
+                            <div key={f.label} className="space-y-3">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">{f.label}</span>
+                                    <span className={`text-xs font-black text-${f.color}`}>{f.value}%</span>
+                                </div>
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="100"
+                                    value={f.value}
+                                    onChange={(e) => f.setter(parseInt(e.target.value))}
+                                    className={`w-full h-1.5 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-${f.color}`}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Results Count */}

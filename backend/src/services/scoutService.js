@@ -10,7 +10,7 @@ const getAthletes = async (queryParams) => {
     const {
         sportType,
         minVerticalLeap,
-        maxSpeed,
+        minSpeed,
         minPointsPerGame,
         isVerified,
         sortBy,
@@ -24,16 +24,21 @@ const getAthletes = async (queryParams) => {
     if (sportType) query.sportType = sportType;
     if (isVerified !== undefined) query.isVerified = isVerified === 'true';
 
-    // Range filters for metrics
-    if (minVerticalLeap) query['rawMetrics.verticalLeap'] = { $gte: Number(minVerticalLeap) };
-    if (maxSpeed) query['rawMetrics.speed'] = { $lte: Number(maxSpeed) };
-    if (minPointsPerGame) query['rawMetrics.pointsPerGame'] = { $gte: Number(minPointsPerGame) };
+    // Range filters for metrics (using Normalized 0-100 scale for UI consistency)
+    if (minVerticalLeap) query['normalizedMetrics.verticalLeap'] = { $gte: Number(minVerticalLeap) };
+    if (minSpeed) query['normalizedMetrics.speed'] = { $gte: Number(minSpeed) };
+    if (minPointsPerGame) query['normalizedMetrics.pointsPerGame'] = { $gte: Number(minPointsPerGame) };
 
     // 2. Define allowed sorting fields
-    const allowedSortFields = ['createdAt', 'rawMetrics.verticalLeap', 'rawMetrics.speed', 'rawMetrics.pointsPerGame'];
+    const allowedSortFields = [
+        'createdAt',
+        'normalizedMetrics.verticalLeap',
+        'normalizedMetrics.speed',
+        'normalizedMetrics.pointsPerGame'
+    ];
     let sort = '-createdAt';
     if (sortBy && allowedSortFields.includes(sortBy)) {
-        sort = sortBy;
+        sort = sortBy === '-createdAt' ? sortBy : `-${sortBy}`; // Always sort descending for metrics
     }
 
     // 3. Execution (Pagination + Lean)
