@@ -106,7 +106,10 @@ const AthleteCard = ({ athlete, isWatchlisted, onToggleWatchlist, onCompareSelec
             <div className="relative p-6 shrink-0 border-b border-white/5 bg-gradient-to-b from-white/5 to-transparent">
                 <div className="absolute top-4 right-4 flex flex-col gap-2 z-20">
                     <button
-                        onClick={(e) => { e.stopPropagation(); onToggleWatchlist(athlete); }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onToggleWatchlist(athlete, meta.status);
+                        }}
                         className={`w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md transition-all duration-300 ${isWatchlisted
                             ? 'bg-primary/20 text-primary shadow-[0_0_15px_rgba(226,255,102,0.3)]'
                             : 'bg-white/5 text-neutral-400 hover:text-white hover:bg-white/10 border border-white/10'

@@ -63,9 +63,9 @@ export const compareAthletes = async (id1, id2) => {
 /**
  * Add athlete to watchlist
  */
-export const addToWatchlist = async (athleteId) => {
+export const addToWatchlist = async (athleteId, status = 'Prospect') => {
     try {
-        const response = await api.post(`/scout/watchlist/${athleteId}`);
+        const response = await api.post(`/scout/watchlist/${athleteId}`, { status });
         return { success: true, data: response.data.data };
     } catch (error) {
         return {

@@ -116,8 +116,8 @@ const compareAthletes = async (athleteId1, athleteId2) => {
 /**
  * Add athlete to scout watchlist
  */
-const addToWatchlist = async (scoutId, athleteId) => {
-    // Check if athlete exists (using lean for performance)
+const addToWatchlist = async (scoutId, athleteId, status = 'Prospect') => {
+    // Check if athlete exists
     const athlete = await User.findOne({ _id: athleteId, role: 'athlete' }).lean();
     if (!athlete) {
         const error = new Error('Athlete user not found');
@@ -125,10 +125,24 @@ const addToWatchlist = async (scoutId, athleteId) => {
         throw error;
     }
 
+    // Check if already in watchlist to avoid duplicates
+    const existingItem = await Watchlist.findOne({ scoutId, athleteId });
+    if (existingItem) {
+        return existingItem;
+    }
+
     const item = await Watchlist.create({
         scoutId,
         athleteId
     });
+
+    // Also create/initialize Meta tracking so analytics pick it up
+    const ScoutAthleteMeta = require('../models/ScoutAthleteMeta');
+    await ScoutAthleteMeta.findOneAndUpdate(
+        { scoutId, athleteId },
+        { status },
+        { upsert: true, new: true }
+    );
 
     return item;
 };

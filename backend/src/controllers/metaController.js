@@ -2,7 +2,7 @@ const ScoutAthleteMeta = require('../models/ScoutAthleteMeta');
 
 exports.getMeta = async (req, res, next) => {
     try {
-        const meta = await ScoutAthleteMeta.findOne({ scoutId: req.user.userId, athleteId: req.params.athleteId });
+        const meta = await ScoutAthleteMeta.findOne({ scoutId: req.user._id, athleteId: req.params.athleteId });
         if (!meta) {
             return res.status(200).json({ success: true, data: { rating: 1, status: 'None', notes: '' } });
         }
@@ -15,7 +15,7 @@ exports.getMeta = async (req, res, next) => {
 exports.updateMeta = async (req, res, next) => {
     try {
         const { rating, status, notes } = req.body;
-        let meta = await ScoutAthleteMeta.findOne({ scoutId: req.user.userId, athleteId: req.params.athleteId });
+        let meta = await ScoutAthleteMeta.findOne({ scoutId: req.user._id, athleteId: req.params.athleteId });
 
         if (meta) {
             meta.rating = rating !== undefined ? rating : meta.rating;
@@ -24,7 +24,7 @@ exports.updateMeta = async (req, res, next) => {
             await meta.save();
         } else {
             meta = await ScoutAthleteMeta.create({
-                scoutId: req.user.userId,
+                scoutId: req.user._id,
                 athleteId: req.params.athleteId,
                 rating: rating || 1,
                 status: status || 'None',

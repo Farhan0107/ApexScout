@@ -101,7 +101,7 @@ const MarketplacePage = () => {
         setTimeout(() => setMessage({ type: '', text: '' }), 3000);
     };
 
-    const handleToggleWatchlist = async (athlete) => {
+    const handleToggleWatchlist = async (athlete, selectedStatus) => {
         const athleteUserId = athlete.userId?._id || athlete.userId;
         const isCurrentlyWatchlisted = watchlistedIds.has(athleteUserId);
 
@@ -119,11 +119,12 @@ const MarketplacePage = () => {
                 showMessage('error', result.message);
             }
         } else {
-            const result = await addToWatchlist(athleteUserId);
+            // Include status if provided, otherwise defaults to Prospect in backend
+            const result = await addToWatchlist(athleteUserId, selectedStatus);
             if (result.success) {
                 setWatchlistedIds(prev => new Set(prev).add(athleteUserId));
                 fetchAnalytics(); // Sync global dashboard
-                showMessage('success', 'Added to watchlist');
+                showMessage('success', `Added to ${selectedStatus || 'Watchlist'}`);
             } else {
                 showMessage('error', result.message);
             }

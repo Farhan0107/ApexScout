@@ -111,7 +111,8 @@ exports.compareAthletes = asyncHandler(async (req, res, next) => {
  */
 exports.addToWatchlist = asyncHandler(async (req, res, next) => {
     const { athleteId } = req.params;
-    const watchlist = await addToWatchlist(req.user._id, athleteId);
+    const { status } = req.body;
+    const watchlist = await addToWatchlist(req.user._id, athleteId, status);
     return sendResponse(res, 201, watchlist, 'Athlete added to watchlist');
 });
 
@@ -148,14 +149,8 @@ exports.updatePipelineStage = asyncHandler(async (req, res, next) => {
     const meta = await ScoutAthleteMeta.findOneAndUpdate(
         { scoutId: req.user._id, athleteId },
         { status },
-        { new: true, runValidators: true }
+        { new: true, runValidators: true, upsert: true }
     );
-
-    if (!meta) {
-        const error = new Error('Athlete meta not found for this scout');
-        error.statusCode = 404;
-        throw error;
-    }
 
     return sendResponse(res, 200, meta, 'Pipeline stage updated successfully');
 });
