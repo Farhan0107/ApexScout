@@ -55,26 +55,31 @@ const AthleteProfilePage = () => {
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
-            const [athleteRes, metaRes, mediaRes] = await Promise.all([
-                getAthleteById(athleteId),
-                getAthleteMeta(athleteId),
-                getAthleteMedia(athleteId)
-            ]);
+            try {
+                const [athleteRes, metaRes, mediaRes] = await Promise.all([
+                    getAthleteById(athleteId),
+                    getAthleteMeta(athleteId),
+                    getAthleteMedia(athleteId)
+                ]);
 
-            if (athleteRes.success) {
-                setAthlete(athleteRes.data);
+                if (athleteRes.success) {
+                    setAthlete(athleteRes.data);
+                }
+                if (metaRes.success && metaRes.data) {
+                    setMeta({
+                        rating: metaRes.data.rating || 1,
+                        status: metaRes.data.status || 'None',
+                        notes: metaRes.data.notes || ''
+                    });
+                }
+                if (mediaRes.success) {
+                    setMedia(mediaRes.data);
+                }
+            } catch (err) {
+                console.error("AthleteProfilePage fetch error:", err);
+            } finally {
+                setLoading(false);
             }
-            if (metaRes.success && metaRes.data) {
-                setMeta({
-                    rating: metaRes.data.rating || 1,
-                    status: metaRes.data.status || 'None',
-                    notes: metaRes.data.notes || ''
-                });
-            }
-            if (mediaRes.success) {
-                setMedia(mediaRes.data);
-            }
-            setLoading(false);
         };
         fetchData();
     }, [athleteId]);

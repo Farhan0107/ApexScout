@@ -19,48 +19,41 @@ exports.getAnalytics = asyncHandler(async (req, res, next) => {
     const scoutId = req.user._id;
 
     // 1. Fetch all meta for this scout
-    const allMeta = await ScoutAthleteMeta.find({ scoutId }).populate({
-        path: 'athleteId',
-        select: 'userId',
-        populate: {
-            path: 'userId',
-            select: 'name'
+    const allMeta = await ScoutAthleteMeta.find({ scoutId }).populate('athleteId', 'name email').lean();
+
+    const stats = {
+        Prospect: 0,
+        Shortlisted: 0,
+        Contacted: 0,
+        Signed: 0,
+        Pass: 0
+    };
+
+    allMeta.forEach(m => {
+        if (stats.hasOwnProperty(m.status)) {
+            stats[m.status]++;
         }
     });
 
-    const totalProspects = allMeta.filter(m => m.status === 'Prospect').length;
-    const shortlisted = allMeta.filter(m => m.status === 'Shortlisted').length;
-    const contacted = allMeta.filter(m => m.status === 'Contacted').length;
-    const signed = allMeta.filter(m => m.status === 'Signed').length;
-    const pass = allMeta.filter(m => m.status === 'Pass').length;
-
     const avgRating = allMeta.length > 0
-        ? (allMeta.reduce((acc, current) => acc + current.rating, 0) / allMeta.length).toFixed(1)
+        ? (allMeta.reduce((acc, current) => acc + (current.rating || 0), 0) / allMeta.length).toFixed(1)
         : 0;
 
     // Top rated athlete
     const topRatedAthlete = allMeta.length > 0
-        ? [...allMeta].sort((a, b) => b.rating - a.rating)[0]
+        ? [...allMeta].sort((a, b) => (b.rating || 0) - (a.rating || 0))[0]
         : null;
 
-    const pipelineDistribution = {
-        Prospect: totalProspects,
-        Shortlisted: shortlisted,
-        Contacted: contacted,
-        Signed: signed,
-        Pass: pass,
-    };
-
     return sendResponse(res, 200, {
-        totalProspects,
-        shortlisted,
-        contacted,
-        signed,
+        totalProspects: stats.Prospect,
+        shortlisted: stats.Shortlisted,
+        contacted: stats.Contacted,
+        signed: stats.Signed,
         averageRating: Number(avgRating),
-        pipelineDistribution,
+        pipelineDistribution: stats,
         topRatedAthlete: topRatedAthlete ? {
-            id: topRatedAthlete.athleteId?._id,
-            name: topRatedAthlete.athleteId?.userId?.name || 'Unknown',
+            id: topRatedAthlete.athleteId?._id || topRatedAthlete.athleteId,
+            name: topRatedAthlete.athleteId?.name || 'Unknown',
             rating: topRatedAthlete.rating
         } : null
     });

@@ -14,22 +14,28 @@ export const AnalyticsProvider = ({ children }) => {
         pipelineDistribution: {}
     });
     const [loading, setLoading] = useState(false);
+    const [lastFetched, setLastFetched] = useState(0);
 
-    const fetchAnalytics = useCallback(async () => {
+    const fetchAnalytics = useCallback(async (force = false) => {
         if (!user || user.role !== 'scout') return;
+
+        // Prevent excessive redundant fetches
+        const now = Date.now();
+        if (!force && lastFetched && now - lastFetched < 2000) return;
 
         setLoading(true);
         try {
             const result = await getAnalytics();
-            if (result.success) {
+            if (result.success && result.data) {
                 setAnalytics(result.data);
+                setLastFetched(now);
             }
         } catch (error) {
             console.error('Context analytics fetch error:', error);
         } finally {
             setLoading(false);
         }
-    }, [user]);
+    }, [user, lastFetched]);
 
     return (
         <AnalyticsContext.Provider value={{ analytics, loading, fetchAnalytics }}>
