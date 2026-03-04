@@ -65,6 +65,24 @@ const getAthletes = async (queryParams) => {
 };
 
 /**
+ * Get detailed athlete profile by ID
+ */
+const getAthleteById = async (id) => {
+    const athlete = await AthleteProfile.findById(id)
+        .populate('userId', 'name email')
+        .select('-__v')
+        .lean();
+
+    if (!athlete) {
+        const error = new Error('Athlete profile not found');
+        error.statusCode = 404;
+        throw error;
+    }
+
+    return athlete;
+};
+
+/**
  * Compare two athletes
  */
 const compareAthletes = async (athleteId1, athleteId2) => {
@@ -135,6 +153,7 @@ const getWatchlist = async (scoutId) => {
 
 module.exports = {
     getAthletes,
+    getAthleteById,
     compareAthletes,
     addToWatchlist,
     removeFromWatchlist,

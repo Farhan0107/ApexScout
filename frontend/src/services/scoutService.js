@@ -16,6 +16,21 @@ export const getAthletes = async (params = {}) => {
 };
 
 /**
+ * Get single athlete detail
+ */
+export const getAthleteById = async (id) => {
+    try {
+        const response = await api.get(`/scout/athletes/${id}`);
+        return { success: true, data: response.data.data };
+    } catch (error) {
+        return {
+            success: false,
+            message: error.response?.data?.message || 'Failed to fetch athlete profile',
+        };
+    }
+};
+
+/**
  * Compare two athletes side by side
  */
 export const compareAthletes = async (id1, id2) => {

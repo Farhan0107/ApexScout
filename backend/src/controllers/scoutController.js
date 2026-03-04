@@ -1,5 +1,12 @@
 const asyncHandler = require('../middleware/asyncHandler');
-const scoutService = require('../services/scoutService');
+const {
+    getAthletes,
+    getAthleteById,
+    compareAthletes,
+    addToWatchlist,
+    removeFromWatchlist,
+    getWatchlist
+} = require('../services/scoutService');
 const sendResponse = require('../utils/sendResponse');
 
 /**
@@ -16,6 +23,17 @@ exports.getAthletes = asyncHandler(async (req, res, next) => {
         currentPage,
         data,
     });
+});
+
+/**
+ * @desc    Get athlete by ID
+ * @route   GET /api/v1/scout/athletes/:id
+ * @access  Private/Scout
+ */
+exports.getAthleteById = asyncHandler(async (req, res, next) => {
+    const athlete = await getAthleteById(req.params.id);
+
+    return sendResponse(res, 200, athlete);
 });
 
 /**

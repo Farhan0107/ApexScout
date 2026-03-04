@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bookmark, BookmarkCheck, Shield, TrendingUp, Zap, GitCompare, Star, Edit3, X } from 'lucide-react';
 import { getAthleteMeta, updateAthleteMeta } from '../../services/scoutService';
 
 const AthleteCard = ({ athlete, isWatchlisted, onToggleWatchlist, onCompareSelect, isCompareSelected }) => {
+    const navigate = useNavigate();
     const user = athlete.userId || {};
     const metrics = athlete.normalizedMetrics || {};
 
@@ -62,7 +64,10 @@ const AthleteCard = ({ athlete, isWatchlisted, onToggleWatchlist, onCompareSelec
     };
 
     return (
-        <div className={`group relative bg-surface border backdrop-blur-xl rounded-[28px] overflow-hidden transition-all duration-500 hover:-translate-y-2 focus-within:-translate-y-2 hover:shadow-[0_12px_40px_-12px_rgba(226,255,102,0.15)] focus-within:shadow-[0_12px_40px_-12px_rgba(226,255,102,0.15)] group-hover:border-primary/20 ${isCompareSelected ? 'border-accent/50 shadow-[0_0_20px_rgba(34,211,238,0.2)]' : 'border-white/5'}`}>
+        <div
+            onClick={() => navigate(`/athlete/${athlete._id}`)}
+            className={`group relative bg-surface border backdrop-blur-xl rounded-[28px] overflow-hidden transition-all duration-500 hover:-translate-y-2 focus-within:-translate-y-2 hover:shadow-[0_12px_40px_-12px_rgba(226,255,102,0.15)] focus-within:shadow-[0_12px_40px_-12px_rgba(226,255,102,0.15)] group-hover:border-primary/20 cursor-pointer ${isCompareSelected ? 'border-accent/50 shadow-[0_0_20px_rgba(34,211,238,0.2)]' : 'border-white/5'}`}
+        >
             {isNotesModalOpen && (
                 <div className="absolute inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-6 flex-col">
                     <div className="w-full flex justify-between items-center mb-4">
@@ -91,9 +96,9 @@ const AthleteCard = ({ athlete, isWatchlisted, onToggleWatchlist, onCompareSelec
             <div className={`h-1 w-full transition-all duration-500 ${athlete.isVerified ? 'bg-gradient-to-r from-primary to-accent' : 'bg-gradient-to-r from-neutral-700 to-neutral-600'}`} />
 
             <div className="relative p-6 shrink-0 border-b border-white/5 bg-gradient-to-b from-white/5 to-transparent">
-                <div className="absolute top-4 right-4 flex flex-col gap-2">
+                <div className="absolute top-4 right-4 flex flex-col gap-2 z-20">
                     <button
-                        onClick={() => onToggleWatchlist(athlete)}
+                        onClick={(e) => { e.stopPropagation(); onToggleWatchlist(athlete); }}
                         className={`w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md transition-all duration-300 ${isWatchlisted
                             ? 'bg-primary/20 text-primary shadow-[0_0_15px_rgba(226,255,102,0.3)]'
                             : 'bg-white/5 text-neutral-400 hover:text-white hover:bg-white/10 border border-white/10'
@@ -102,7 +107,7 @@ const AthleteCard = ({ athlete, isWatchlisted, onToggleWatchlist, onCompareSelec
                         <Bookmark size={16} fill={isWatchlisted ? 'currentColor' : 'none'} />
                     </button>
                     <button
-                        onClick={() => onCompareSelect(athlete)}
+                        onClick={(e) => { e.stopPropagation(); onCompareSelect(athlete); }}
                         className={`w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md transition-all duration-300 ${isCompareSelected
                             ? 'bg-accent/20 text-accent shadow-[0_0_15px_rgba(34,211,238,0.3)]'
                             : 'bg-white/5 text-neutral-400 hover:text-white hover:bg-white/10 border border-white/10'
@@ -175,7 +180,7 @@ const AthleteCard = ({ athlete, isWatchlisted, onToggleWatchlist, onCompareSelec
             {/* Scout Meta Strip */}
             <div className="border-t border-white/5 bg-black/20 p-4 flex items-center justify-between gap-2">
                 {/* 1-5 Star Rating */}
-                <div className="flex gap-1">
+                <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
                     {[1, 2, 3, 4, 5].map(star => (
                         <button
                             key={star}
@@ -191,7 +196,7 @@ const AthleteCard = ({ athlete, isWatchlisted, onToggleWatchlist, onCompareSelec
                     ))}
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
                     {/* Status Dropdown */}
                     <div className="relative group/status flex items-center">
                         <select

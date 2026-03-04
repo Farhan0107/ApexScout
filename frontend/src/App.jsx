@@ -12,6 +12,7 @@ import AthleteDashboard from './features/athlete/AthleteDashboard';
 import MarketplacePage from './features/scout/MarketplacePage';
 import WatchlistPage from './features/scout/WatchlistPage';
 import ScoutDashboard from './features/scout/ScoutDashboard';
+import AthleteProfilePage from './features/scout/AthleteProfilePage';
 
 const AppContent = () => {
     const { user, token, loading } = useAuth();
@@ -50,6 +51,7 @@ const AppContent = () => {
                         {/* Scout Routes */}
                         <Route element={<RoleBasedRoute allowedRoles={['scout']} />}>
                             <Route path="/marketplace" element={<MarketplacePage />} />
+                            <Route path="/athlete/:athleteId" element={<AthleteProfilePage />} />
                             <Route path="/watchlist" element={<WatchlistPage />} />
                         </Route>
                     </Route>
