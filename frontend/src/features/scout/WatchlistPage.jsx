@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bookmark, Eye, Loader2, GitCompare } from 'lucide-react';
 import { DndContext, closestCenter, DragOverlay } from '@dnd-kit/core';
-import { getWatchlist, removeFromWatchlist, updateAthleteMeta } from '../../services/scoutService';
+import { getWatchlist, removeFromWatchlist, updatePipelineStage } from '../../services/scoutService';
 import { KanbanColumn, DraggableAthleteCard } from './KanbanColumn';
 import { useAnalytics } from '../../context/AnalyticsContext';
 
@@ -85,7 +85,7 @@ const WatchlistPage = () => {
             return i;
         }));
 
-        const result = await updateAthleteMeta(athleteId, { status: newStatus });
+        const result = await updatePipelineStage(athleteId, newStatus);
         if (!result.success) {
             fetchWatchlist(); // Revert on failure
             showMessage('error', 'Status sync failure');

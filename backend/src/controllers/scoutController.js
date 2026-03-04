@@ -135,3 +135,27 @@ exports.getWatchlist = asyncHandler(async (req, res, next) => {
     const watchlist = await getWatchlist(req.user._id);
     return sendResponse(res, 200, watchlist);
 });
+
+/**
+ * @desc    Update athlete pipeline stage
+ * @route   PATCH /api/v1/scout/pipeline/:athleteId
+ * @access  Private/Scout
+ */
+exports.updatePipelineStage = asyncHandler(async (req, res, next) => {
+    const { athleteId } = req.params;
+    const { status } = req.body;
+
+    const meta = await ScoutAthleteMeta.findOneAndUpdate(
+        { scoutId: req.user._id, athleteId },
+        { status },
+        { new: true, runValidators: true }
+    );
+
+    if (!meta) {
+        const error = new Error('Athlete meta not found for this scout');
+        error.statusCode = 404;
+        throw error;
+    }
+
+    return sendResponse(res, 200, meta, 'Pipeline stage updated successfully');
+});

@@ -134,3 +134,18 @@ export const updateAthleteMeta = async (athleteId, metaData) => {
         };
     }
 };
+
+/**
+ * Update athlete pipeline stage via optimized route
+ */
+export const updatePipelineStage = async (athleteId, status) => {
+    try {
+        const response = await api.patch(`/scout/pipeline/${athleteId}`, { status });
+        return { success: true, data: response.data.data };
+    } catch (error) {
+        return {
+            success: false,
+            message: error.response?.data?.message || 'Failed to update pipeline stage',
+        };
+    }
+};

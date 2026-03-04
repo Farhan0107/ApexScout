@@ -6,7 +6,8 @@ const {
     compareAthletes,
     addToWatchlist,
     removeFromWatchlist,
-    getWatchlist
+    getWatchlist,
+    updatePipelineStage
 } = require('../controllers/scoutController');
 
 const { protect } = require('../middleware/authMiddleware');
@@ -26,5 +27,6 @@ router.get('/compare', compareAthletes);
 router.post('/watchlist/:athleteId', addToWatchlist);
 router.delete('/watchlist/:athleteId', removeFromWatchlist);
 router.get('/watchlist', getWatchlist);
+router.patch('/pipeline/:athleteId', updatePipelineStage);
 
 module.exports = router;
