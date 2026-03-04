@@ -25,11 +25,23 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
-        if (error.response?.status === 401) {
+        const { config, response } = error;
+
+        // Auto-retry once for common cold-start or transient network errors
+        if (!config._retry && (!response || response.status >= 500)) {
+            config._retry = true;
+            // Delay slightly before retrying (backoff)
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            return api(config);
+        }
+
+        if (response?.status === 401) {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            // Force a refresh to clear state and redirect via App logic
-            window.location.href = '/login';
+            // Avoid infinite redirects
+            if (window.location.pathname !== '/login') {
+                window.location.href = '/login';
+            }
         }
         return Promise.reject(error);
     }
