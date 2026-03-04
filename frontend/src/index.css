@@ -1,0 +1,162 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    background-color: #0a0a0c;
+  }
+
+  body {
+    @apply bg-background text-white font-sans antialiased;
+    background-color: #0a0a0c;
+  }
+
+  ::selection {
+    background-color: rgba(226, 255, 102, 0.2);
+    color: #E2FF66;
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-20px) scale(1.02);
+  }
+}
+
+.animate-float {
+  animation: float 15s ease-in-out infinite;
+}
+
+/* Custom transitions and glassmorphism utils */
+.glass {
+  @apply bg-white/5 backdrop-blur-xl border border-white/5;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+.glass-panel {
+  @apply bg-white/5 sm:bg-gradient-to-br sm:from-white/5 sm:to-transparent backdrop-blur-3xl border border-white/10 rounded-[24px] sm:rounded-[32px];
+  box-shadow:
+    0 8px 32px 0 rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+.neon-border {
+  @apply border-primary/30 hover:border-primary transition-all duration-300;
+  box-shadow: inset 0 0 20px rgba(226, 255, 102, 0.05);
+}
+
+.neon-border:hover {
+  box-shadow:
+    0 0 20px rgba(226, 255, 102, 0.2),
+    inset 0 0 20px rgba(226, 255, 102, 0.1);
+}
+
+.neon-text {
+  color: theme('colors.primary.DEFAULT');
+  filter: drop_shadow(0 0 8px rgba(226, 255, 102, 0.6));
+}
+
+.accent-glow {
+  filter: drop-shadow(0 0 12px rgba(34, 211, 238, 0.5));
+}
+
+/* Hide scrollbar for horizontal scroll areas */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-white/10 rounded-full hover:bg-white/20 transition-colors;
+}
+
+.auth-hero-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.athlete-layer {
+  position: absolute;
+  top: 50%;
+  margin-top: -450px;
+  width: 33vw;
+  min-width: 450px;
+  height: 900px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+  opacity: 0.15;
+  filter: grayscale(1) contrast(1.2);
+  mix-blend-mode: screen;
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 20%, transparent 65%);
+  mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 20%, transparent 65%);
+  will-change: transform;
+  transform: translate3d(calc((var(--mouse-x, 0.5) - 0.5) * 40px),
+      calc((var(--mouse-y, 0.5) - 0.5) * 40px),
+      0);
+  transition: transform 0.15s ease-out;
+}
+
+.athlete-runner {
+  left: 0;
+  background-image: url('./assets/athletes/runner.webp');
+}
+
+.athlete-football {
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  background-image: url('./assets/athletes/football.webp');
+}
+
+.athlete-basketball {
+  right: 0;
+  background-image: url('./assets/athletes/basketball.webp');
+}
+
+.light-sweep-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg,
+      transparent 40%,
+      rgba(255, 255, 255, 0.05) 50%,
+      transparent 60%);
+  animation: sweep 18s linear infinite;
+  mix-blend-mode: overlay;
+}
+
+@keyframes sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+body {
+  perspective: 1200px;
+}

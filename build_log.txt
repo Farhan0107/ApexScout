@@ -1,0 +1,230 @@
+﻿node.exe : 2026-03-03T16:15:12.750Z vite:config bundled config file 
+loaded in 79.09ms
+At C:\Program Files\nodejs\npx.ps1:29 char:3
++   & $NODE_EXE $NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (2026-03-03T16:1...aded 
+    in 79.09ms:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+2026-03-03T16:15:12.797Z vite:config using resolved config: {
+  plugins: [
+    'vite:build-metadata',
+    'vite:watch-package-data',
+    'vite:pre-alias',
+    'alias',
+    'vite:react-babel',
+    'vite:react-refresh',
+    'vite:modulepreload-polyfill',
+    'vite:resolve',
+    'vite:html-inline-proxy',
+    'vite:css',
+    'vite:esbuild',
+    'vite:json',
+    'vite:wasm-helper',
+    'vite:worker',
+    'vite:asset',
+    'vite:wasm-fallback',
+    'vite:define',
+    'vite:css-post',
+    'vite:build-html',
+    'vite:worker-import-meta-url',
+    'vite:asset-import-meta-url',
+    'vite:force-systemjs-wrap-complete',
+    'commonjs',
+    'vite:data-uri',
+    'vite:dynamic-import-vars',
+    'vite:import-glob',
+    'vite:build-import-analysis',
+    'vite:esbuild-transpile',
+    'vite:terser',
+    'vite:reporter',
+    'vite:load-fallback'
+  ],
+  build: {
+    target: [ 'es2020', 'edge88', 'firefox78', 'chrome87', 
+'safari14' ],
+    cssTarget: [ 'es2020', 'edge88', 'firefox78', 'chrome87', 
+'safari14' ],
+    outDir: 'dist',
+    assetsDir: 'assets',
+    assetsInlineLimit: 4096,
+    cssCodeSplit: true,
+    sourcemap: false,
+    rollupOptions: { onwarn: [Function: onwarn] },
+    minify: 'esbuild',
+    terserOptions: {},
+    write: true,
+    emptyOutDir: null,
+    copyPublicDir: true,
+    manifest: false,
+    lib: false,
+    ssr: false,
+    ssrManifest: false,
+    ssrEmitAssets: false,
+    reportCompressedSize: true,
+    chunkSizeWarningLimit: 500,
+    watch: null,
+    commonjsOptions: { include: [Array], extensions: [Array] },
+    dynamicImportVarsOptions: { warnOnError: true, exclude: [Array] 
+},
+    modulePreload: { polyfill: true },
+    cssMinify: true
+  },
+  esbuild: { jsxDev: false, jsx: 'automatic', jsxImportSource: 
+undefined },
+  optimizeDeps: {
+    holdUntilCrawlEnd: true,
+    esbuildOptions: { preserveSymlinks: false, jsx: 'automatic' },
+    include: [
+      'react',
+      'react-dom',
+      'react/jsx-dev-runtime',
+      'react/jsx-runtime'
+    ]
+  },
+  resolve: {
+    mainFields: [ 'browser', 'module', 'jsnext:main', 'jsnext' ],
+    conditions: [],
+    extensions: [
+      '.mjs',  '.js',
+      '.mts',  '.ts',
+      '.jsx',  '.tsx',
+      '.json'
+    ],
+    dedupe: [ 'react', 'react-dom' ],
+    preserveSymlinks: false,
+    alias: [ [Object], [Object] ]
+  },
+  configFile: 'C:/Users/HP/OneDrive/Desktop/PROJECTS/ApexScout/front
+end/vite.config.js',
+  configFileDependencies: [
+    'C:/Users/HP/OneDrive/Desktop/PROJECTS/ApexScout/frontend/vite.c
+onfig.js'
+  ],
+  inlineConfig: {
+    root: undefined,
+    base: undefined,
+    mode: undefined,
+    configFile: undefined,
+    logLevel: undefined,
+    clearScreen: undefined,
+    build: {}
+  },
+  root: 'C:/Users/HP/OneDrive/Desktop/PROJECTS/ApexScout/frontend',
+  base: '/',
+  decodedBase: '/',
+  rawBase: '/',
+  publicDir: 
+'C:/Users/HP/OneDrive/Desktop/PROJECTS/ApexScout/frontend/public',
+  cacheDir: 'C:/Users/HP/OneDrive/Desktop/PROJECTS/ApexScout/fronten
+d/node_modules/.vite',
+  command: 'build',
+  mode: 'production',
+  ssr: {
+    target: 'node',
+    optimizeDeps: { noDiscovery: true, esbuildOptions: [Object] }
+  },
+  isWorker: false,
+  mainConfig: null,
+  bundleChain: [],
+  isProduction: true,
+  css: { lightningcss: undefined },
+  server: {
+    preTransformRequests: true,
+    sourcemapIgnoreList: [Function: isInNodeModules$1],
+    middlewareMode: false,
+    fs: {
+      strict: true,
+      allow: [Array],
+      deny: [Array],
+      cachedChecks: undefined
+    }
+  },
+  preview: {
+    port: undefined,
+    strictPort: undefined,
+    host: undefined,
+    allowedHosts: undefined,
+    https: undefined,
+    open: undefined,
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+    proxy: undefined,
+    cors: undefined,
+    headers: undefined
+  },
+  envDir: 
+'C:/Users/HP/OneDrive/Desktop/PROJECTS/ApexScout/frontend',
+  env: { BASE_URL: '/', MODE: 'production', DEV: false, PROD: true 
+},
+  assetsInclude: [Function: assetsInclude],
+  logger: {
+    hasWarned: false,
+    info: [Function: info],
+    warn: [Function: warn],
+    warnOnce: [Function: warnOnce],
+    error: [Function: error],
+    clearScreen: [Function: clearScreen],
+    hasErrorLogged: [Function: hasErrorLogged]
+  },
+  packageCache: Map(1) {
+    'fnpd_C:/Users/HP/OneDrive/Desktop/PROJECTS/ApexScout/frontend' 
+=> {
+      dir: 
+'C:/Users/HP/OneDrive/Desktop/PROJECTS/ApexScout/frontend',
+      data: [Object],
+      hasSideEffects: [Function: hasSideEffects],
+      webResolvedImports: {},
+      nodeResolvedImports: {},
+      setResolvedCache: [Function: setResolvedCache],
+      getResolvedCache: [Function: getResolvedCache]
+    },
+    set: [Function (anonymous)]
+  },
+  createResolver: [Function: createResolver],
+  worker: { format: 'iife', plugins: '() => plugins', 
+rollupOptions: {} },
+  appType: 'spa',
+  experimental: { importGlobRestoreExtension: false, 
+hmrPartialAccept: false },
+  webSocketToken: 'DgnlFb1oXnNG',
+  additionalAllowedHosts: [],
+  getSortedPlugins: [Function: getSortedPlugins],
+  getSortedPluginHooks: [Function: getSortedPluginHooks]
+}
+transforming...
+[32mΓ£ô[39m 25 modules transformed.
+[31mx[39m Build failed in 1.31s
+[31merror during build:
+[31m[vite:css] [postcss] C:/Users/HP/OneDrive/Desktop/PROJECTS/Apex
+Scout/frontend/src/index.css:31:3: The 
+`drop-shadow-[0_0_8px_rgba(226,` class does not exist. If 
+`drop-shadow-[0_0_8px_rgba(226,` is a custom class, make sure it is 
+defined within a `@layer` directive.[31m
+file: [36mC:/Users/HP/OneDrive/Desktop/PROJECTS/ApexScout/frontend/
+src/index.css:31:2[31m
+    at Input.error (C:\Users\HP\OneDrive\Desktop\PROJECTS\ApexScout\
+frontend\node_modules\postcss\lib\input.js:135:16)
+    at AtRule.error (C:\Users\HP\OneDrive\Desktop\PROJECTS\ApexScout
+\frontend\node_modules\postcss\lib\node.js:146:32)
+    at processApply (C:\Users\HP\OneDrive\Desktop\PROJECTS\ApexScout
+\frontend\node_modules\tailwindcss\lib\lib\expandApplyAtRules.js:380
+:29)
+    at C:\Users\HP\OneDrive\Desktop\PROJECTS\ApexScout\frontend\node
+_modules\tailwindcss\lib\lib\expandApplyAtRules.js:551:9
+    at C:\Users\HP\OneDrive\Desktop\PROJECTS\ApexScout\frontend\node
+_modules\tailwindcss\lib\processTailwindFeatures.js:55:50
+    at async plugins (C:\Users\HP\OneDrive\Desktop\PROJECTS\ApexScou
+t\frontend\node_modules\tailwindcss\lib\plugin.js:38:17)
+    at async LazyResult.runAsync (C:\Users\HP\OneDrive\Desktop\PROJE
+CTS\ApexScout\frontend\node_modules\postcss\lib\lazy-result.js:293:1
+1)
+    at async compileCSS (file:///C:/Users/HP/OneDrive/Desktop/PROJEC
+TS/ApexScout/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jB
+a.js:36898:21)
+    at async Object.transform (file:///C:/Users/HP/OneDrive/Desktop/
+PROJECTS/ApexScout/frontend/node_modules/vite/dist/node/chunks/dep-B
+K3b2jBa.js:36171:11)
+    at async transform (file:///C:/Users/HP/OneDrive/Desktop/PROJECT
+S/ApexScout/frontend/node_modules/rollup/dist/es/shared/node-entry.j
+s:21269:16)[39m
