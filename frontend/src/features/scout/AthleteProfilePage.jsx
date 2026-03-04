@@ -16,10 +16,9 @@ import {
     ExternalLink
 } from 'lucide-react';
 import {
-    getAthleteById,
-    getAthleteMeta,
     updateAthleteMeta
 } from '../../services/scoutService';
+import { useAnalytics } from '../../context/AnalyticsContext';
 import { getAthleteMedia } from '../../services/mediaService';
 import {
     Chart as ChartJS,
@@ -44,6 +43,7 @@ ChartJS.register(
 const AthleteProfilePage = () => {
     const { athleteId } = useParams();
     const navigate = useNavigate();
+    const { fetchAnalytics } = useAnalytics();
 
     const [athlete, setAthlete] = useState(null);
     const [meta, setMeta] = useState({ rating: 1, status: 'None', notes: '' });
@@ -89,6 +89,7 @@ const AthleteProfilePage = () => {
         const res = await updateAthleteMeta(athleteId, meta);
         setSaving(false);
         if (res.success) {
+            fetchAnalytics(); // Sync global dashboard with new status/rating
             setSavedNotice(true);
             setTimeout(() => setSavedNotice(false), 2000);
         }

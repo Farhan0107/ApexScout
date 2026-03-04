@@ -3,10 +3,12 @@ import { Search, SlidersHorizontal, Users, GitCompare, X, ChevronLeft, ChevronRi
 import AthleteCard from './AthleteCard';
 import CompareModal from './CompareModal';
 import { getAthletes, addToWatchlist, removeFromWatchlist, getWatchlist, compareAthletes } from '../../services/scoutService';
+import { useAnalytics } from '../../context/AnalyticsContext';
 
 const SPORT_TYPES = ['All', 'Basketball', 'Football', 'Soccer', 'Track & Field', 'Swimming', 'Tennis', 'Baseball', 'MMA'];
 
 const MarketplacePage = () => {
+    const { fetchAnalytics } = useAnalytics();
     const [athletes, setAthletes] = useState([]);
     const [watchlistedIds, setWatchlistedIds] = useState(new Set());
     const [loading, setLoading] = useState(true);
@@ -111,6 +113,7 @@ const MarketplacePage = () => {
                     next.delete(athleteUserId);
                     return next;
                 });
+                fetchAnalytics(); // Sync global dashboard
                 showMessage('success', 'Removed from watchlist');
             } else {
                 showMessage('error', result.message);
@@ -119,6 +122,7 @@ const MarketplacePage = () => {
             const result = await addToWatchlist(athleteUserId);
             if (result.success) {
                 setWatchlistedIds(prev => new Set(prev).add(athleteUserId));
+                fetchAnalytics(); // Sync global dashboard
                 showMessage('success', 'Added to watchlist');
             } else {
                 showMessage('error', result.message);

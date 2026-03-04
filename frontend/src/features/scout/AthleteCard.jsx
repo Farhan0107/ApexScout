@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bookmark, BookmarkCheck, Shield, TrendingUp, Zap, GitCompare, Star, Edit3, X } from 'lucide-react';
 import { getAthleteMeta, updateAthleteMeta } from '../../services/scoutService';
+import { useAnalytics } from '../../context/AnalyticsContext';
 
 const AthleteCard = ({ athlete, isWatchlisted, onToggleWatchlist, onCompareSelect, isCompareSelected }) => {
     const navigate = useNavigate();
+    const { fetchAnalytics } = useAnalytics();
     const user = athlete.userId || {};
     const metrics = athlete.normalizedMetrics || {};
 
@@ -53,7 +55,10 @@ const AthleteCard = ({ athlete, isWatchlisted, onToggleWatchlist, onCompareSelec
         const athleteUserId = athlete.userId?._id || athlete.userId;
         const newMeta = { ...meta, ...updates };
         setMeta(newMeta);
-        await updateAthleteMeta(athleteUserId, newMeta);
+        const result = await updateAthleteMeta(athleteUserId, newMeta);
+        if (result.success) {
+            fetchAnalytics(); // Ensure dashboard reflects new rating/status
+        }
     };
 
     const handleNotesOpen = () => {
