@@ -79,7 +79,12 @@ const getAthletes = async (queryParams) => {
  * Get detailed athlete profile by ID
  */
 const getAthleteById = async (id) => {
-    const athlete = await AthleteProfile.findOne({ userId: id })
+    const athlete = await AthleteProfile.findOne({
+        $or: [
+            { userId: id },
+            { _id: id }
+        ]
+    })
         .populate('userId', 'name email')
         .select('-__v')
         .lean();

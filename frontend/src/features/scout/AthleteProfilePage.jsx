@@ -16,6 +16,8 @@ import {
     ExternalLink
 } from 'lucide-react';
 import {
+    getAthleteById,
+    getAthleteMeta,
     updateAthleteMeta
 } from '../../services/scoutService';
 import { useAnalytics } from '../../context/AnalyticsContext';
